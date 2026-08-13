@@ -1,0 +1,4 @@
+[[rules]]
+id = "aws-account-id"
+description = "AWS Account ID"
+regex = '''\b\d{12}\b'''

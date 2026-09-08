@@ -127,3 +127,61 @@ Terraform validate with tflint...........................................Passed
 Checkov..................................................................Passed
 Detect hardcoded secrets.................................................Passed
 ```
+
+## The Lambda code_sha256 mystery
+
+- When performing a `terraform plan`, the Lambda `code_sha256` shows a change, which implies the lamba code has been changed
+- To verify if a diff has occurred on the lambda code, perform:
+```bash
+curl -s "$(aws --region us-west-2 lambda get-function --function-name DemoCnnectLambda --query 'Code.Location' --output text)" -o deployed_lambda.zip
+unzip -p deployed_lambda.zip lambda_function.py > deployed_lambda_function.py
+diff deployed_lambda_function.py lambda_src/lambda_function.py
+```
+
+The diff came back with **no output**, so the Python source is genuinely identical
+
+`archive_file` rebuilds the zip fresh on every `plan/apply`, and the zip container format bakes in file metadata (notably modification timestamps) that can differ between builds even with byte-identical source — e.g. if `lambda_function.py`'s mtime changed from a git checkout, an editor re-save, or similar, without its content changing at all. That would make this expected noise, not drift
+
+## Targetted terraform plan and apply on connect instance
+
+```bash
+terraform plan -target=aws_connect_instance.this -out=tfplan
+terraform apply tfplan
+```
+
+Here, `-out=tfplan` serializes the exact scoped plan to a file, and `apply tfplan` **applies precisely that file** — no re-planning, no risk of drift between the two steps (e.g. someone else changing infrastructure in the gap between your review and your apply). This is genuinely the more production-appropriate pattern generally, and worth adopting as your default now that you know it exists — it's strictly safer than either of the two-step sequences you proposed, and safer even than the single `apply -target`, since it removes the tiny window where a second implicit plan could differ from what you actually reviewed.
+
+### What Atlantis actually does
+
+Atlantis doesn't invent new Terraform behavior — it's an orchestration layer that **wraps the exact** `plan -out=tfplan` → `apply tfplan` **sequence just adopted above**, triggered by PR comments (`atlantis plan`, `atlantis apply`) instead of you typing commands locally. 
+When someone comments `atlantis plan`, it runs `terraform plan -out=tfplan` on its server, posts the output as a PR comment for review, and **stores that exact plan file** tied to that PR/commit. When someone then comments `atlantis apply`, it runs `terraform apply` against **that saved file** — not a fresh plan — which is precisely the guarantee `-out=tfplan` gives you locally: what got reviewed is what gets applied, no drift in between.
+
+Atlantis's whole value proposition is this exact plan-file discipline, just automated and tied to git/PR review instead of your terminal. You'd essentially be hand-running what Atlantis does for a team.
+
+### Multiple targetted plans
+
+```bash
+terraform plan \
+  -target=aws_connect_hours_of_operation.nine_to_five_nz \
+  -target=aws_connect_queue.gerrys_queue \
+  -target=aws_connect_queue.priority_queue \
+  -out=tfplan
+```
+
+Multiple `-target` flags are **additive** — this scopes the plan to exactly these three resources, as I presently want to exclude the Lambda entirely from consideration.
+
+## Generating terraform for the aws connect flows
+
+The following steps are required
+
+1. Export flow with python script `export_flow.py` to produce an outputted json file
+1. Template the arns of the json and save as a template `.tftpl` extension file
+1. Create resources as noted via file `demo_flow.tf`
+1. Create your import
+  1. The `to` parameter will take the `instance_id:flow_id` compound format
+1. Perform `terraform plan`
+  1. You shoud get
+  ```hcl
+  Plan: 1 to import, 0 to add, 1 to change, 0 to destroy.
+  ```
+1. If you get `1 to import, 1 to change`, the diff went well as change reflects `tags`

@@ -46,3 +46,12 @@ terraform.rc
 # My extra fields
 # There may be multiple `imports.tf` so applying an exclsuiion to all of them
 imports.tf
+
+# python exclsuion
+__pycache__/
+*.pyc
+venv/
+
+connect-terraform/environments/dev/lambda_src/lambda_function.zip
+connect-terraform/flows/*.json
+tfplan

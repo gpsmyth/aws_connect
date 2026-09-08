@@ -1,0 +1,233 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "e1a78c6a-0954-4a9f-b159-d3ae6cd9bd3f",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": 40,
+      "y": 40
+    },
+    "ActionMetadata": {
+      "e1a78c6a-0954-4a9f-b159-d3ae6cd9bd3f": {
+        "position": {
+          "x": 108.8,
+          "y": 38.4
+        }
+      },
+      "Welcome to the demo contact centre.": {
+        "position": {
+          "x": 104.8,
+          "y": 256.8
+        },
+        "isFriendlyName": true
+      },
+      "We are currently closed": {
+        "position": {
+          "x": 562.4,
+          "y": 266.4
+        },
+        "isFriendlyName": true
+      },
+      "ac92ae5c-3b2b-4a7c-8420-1a6bc3582c19": {
+        "position": {
+          "x": 555.2,
+          "y": 60.8
+        },
+        "parameters": {
+          "QueueId": {
+            "displayName": "gerrysQueue"
+          }
+        },
+        "queue": {
+          "text": "gerrysQueue"
+        }
+      },
+      "1d2d33e3-97d2-4ba6-bdee-ec7b10a8e4ac": {
+        "position": {
+          "x": 804.8,
+          "y": 118.4
+        }
+      },
+      "e7a17f51-4fb9-43b6-ab78-f4865588db0e": {
+        "position": {
+          "x": 811.2,
+          "y": 347.2
+        }
+      },
+      "we're experiencing technical difficulties": {
+        "position": {
+          "x": 318.4,
+          "y": 408.8
+        },
+        "isFriendlyName": true
+      },
+      "Check hours of operation": {
+        "position": {
+          "x": 332,
+          "y": 82.4
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "HoursOfOperationId": {
+            "displayName": "9to5NZ"
+          }
+        },
+        "Hours": {
+          "id": "${hours_of_operation_arn}",
+          "text": "9to5NZ"
+        }
+      },
+      "a7f2a540-11e8-4939-8a16-c56f9b39b3bf": {
+        "position": {
+          "x": 561.6,
+          "y": 480
+        }
+      }
+    },
+    "Annotations": []
+  },
+  "Actions": [
+    {
+      "Parameters": {
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "e1a78c6a-0954-4a9f-b159-d3ae6cd9bd3f",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "Welcome to the demo contact centre."
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Welcome to the demo contact centre, please hold while we check availability."
+      },
+      "Identifier": "Welcome to the demo contact centre.",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "Check hours of operation",
+        "Errors": [
+          {
+            "NextAction": "we're experiencing technical difficulties",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "We are currently closed as you reached us out of hours. Please call back later"
+      },
+      "Identifier": "We are currently closed",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+        "Errors": [
+          {
+            "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "QueueId": "${gerrys_queue_arn}"
+      },
+      "Identifier": "ac92ae5c-3b2b-4a7c-8420-1a6bc3582c19",
+      "Type": "UpdateContactTargetQueue",
+      "Transitions": {
+        "NextAction": "1d2d33e3-97d2-4ba6-bdee-ec7b10a8e4ac",
+        "Errors": [
+          {
+            "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "1d2d33e3-97d2-4ba6-bdee-ec7b10a8e4ac",
+      "Type": "TransferContactToQueue",
+      "Transitions": {
+        "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+        "Errors": [
+          {
+            "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+            "ErrorType": "QueueAtCapacity"
+          },
+          {
+            "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "we're experiencing technical difficulties, please try again later"
+      },
+      "Identifier": "we're experiencing technical difficulties",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "a7f2a540-11e8-4939-8a16-c56f9b39b3bf",
+        "Errors": [
+          {
+            "NextAction": "a7f2a540-11e8-4939-8a16-c56f9b39b3bf",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "HoursOfOperationId": "${hours_of_operation_arn}"
+      },
+      "Identifier": "Check hours of operation",
+      "Type": "CheckHoursOfOperation",
+      "Transitions": {
+        "NextAction": "a7f2a540-11e8-4939-8a16-c56f9b39b3bf",
+        "Conditions": [
+          {
+            "NextAction": "ac92ae5c-3b2b-4a7c-8420-1a6bc3582c19",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "True"
+              ]
+            }
+          },
+          {
+            "NextAction": "We are currently closed",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "False"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "a7f2a540-11e8-4939-8a16-c56f9b39b3bf",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "a7f2a540-11e8-4939-8a16-c56f9b39b3bf",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    }
+  ]
+}

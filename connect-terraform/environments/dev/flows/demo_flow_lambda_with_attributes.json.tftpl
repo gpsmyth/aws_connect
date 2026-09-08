@@ -1,0 +1,369 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "e1a78c6a-0954-4a9f-b159-d3ae6cd9bd3f",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": 40,
+      "y": 40
+    },
+    "ActionMetadata": {
+      "e1a78c6a-0954-4a9f-b159-d3ae6cd9bd3f": {
+        "position": {
+          "x": 108.8,
+          "y": 38.4
+        }
+      },
+      "1d2d33e3-97d2-4ba6-bdee-ec7b10a8e4ac": {
+        "position": {
+          "x": 1676.8,
+          "y": 107.2
+        }
+      },
+      "We are currently closed": {
+        "position": {
+          "x": 1188.8,
+          "y": 435.2
+        },
+        "isFriendlyName": true
+      },
+      "e7a17f51-4fb9-43b6-ab78-f4865588db0e": {
+        "position": {
+          "x": 1686.4,
+          "y": 412.8
+        }
+      },
+      "a7f2a540-11e8-4939-8a16-c56f9b39b3bf": {
+        "position": {
+          "x": 851.2,
+          "y": 432.8
+        }
+      },
+      "Welcome to the demo contact centre.": {
+        "position": {
+          "x": 104.8,
+          "y": 256.8
+        },
+        "isFriendlyName": true
+      },
+      "Check hours of operation": {
+        "position": {
+          "x": 332,
+          "y": 82.4
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "HoursOfOperationId": {
+            "displayName": "9to5NZ"
+          }
+        },
+        "Hours": {
+          "id": "${hours_of_operation_arn}",
+          "text": "9to5NZ"
+        }
+      },
+      "0c9e7c55-7079-4cea-9653-4bbdc47d7eb2": {
+        "position": {
+          "x": 582.4,
+          "y": -16
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "${lambda_arn}"
+          }
+        },
+        "dynamicMetadata": {}
+      },
+      "we're experiencing technical difficulties": {
+        "position": {
+          "x": 615.2,
+          "y": 383.2
+        },
+        "isFriendlyName": true
+      },
+      "ac92ae5c-3b2b-4a7c-8420-1a6bc3582c19": {
+        "position": {
+          "x": 1370.4,
+          "y": -9.6
+        },
+        "parameters": {
+          "QueueId": {
+            "displayName": "gerrysQueue"
+          }
+        },
+        "queue": {
+          "text": "gerrysQueue"
+        }
+      },
+      "You are not in a priority queue": {
+        "position": {
+          "x": 1195.2,
+          "y": 194.4
+        },
+        "isFriendlyName": true
+      },
+      "a1e83d18-2f28-41e0-ba54-ca1f680c2f2f": {
+        "position": {
+          "x": 818.4,
+          "y": -14.4
+        },
+        "parameters": {
+          "Attributes": {
+            "LambdaPriority": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "LambdaPriority"
+        ]
+      },
+      "7f85067b-facf-415f-925e-d90fe1d881b1": {
+        "position": {
+          "x": 1093.6,
+          "y": -11.2
+        },
+        "conditionMetadata": [
+          {
+            "id": "6c5fc6e7-58d1-44e2-9c9b-e5a948393b41",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "standard"
+          }
+        ]
+      }
+    },
+    "Annotations": []
+  },
+  "Actions": [
+    {
+      "Parameters": {
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "e1a78c6a-0954-4a9f-b159-d3ae6cd9bd3f",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "Welcome to the demo contact centre."
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "1d2d33e3-97d2-4ba6-bdee-ec7b10a8e4ac",
+      "Type": "TransferContactToQueue",
+      "Transitions": {
+        "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+        "Errors": [
+          {
+            "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+            "ErrorType": "QueueAtCapacity"
+          },
+          {
+            "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "We are currently closed as you reached us out of hours. Please call back later"
+      },
+      "Identifier": "We are currently closed",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+        "Errors": [
+          {
+            "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {},
+      "Identifier": "a7f2a540-11e8-4939-8a16-c56f9b39b3bf",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Welcome to the demo contact centre, please hold while we check availability."
+      },
+      "Identifier": "Welcome to the demo contact centre.",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "Check hours of operation",
+        "Errors": [
+          {
+            "NextAction": "we're experiencing technical difficulties",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "HoursOfOperationId": "${hours_of_operation_arn}"
+      },
+      "Identifier": "Check hours of operation",
+      "Type": "CheckHoursOfOperation",
+      "Transitions": {
+        "NextAction": "we're experiencing technical difficulties",
+        "Conditions": [
+          {
+            "NextAction": "0c9e7c55-7079-4cea-9653-4bbdc47d7eb2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "True"
+              ]
+            }
+          },
+          {
+            "NextAction": "We are currently closed",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "False"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "we're experiencing technical difficulties",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "${lambda_arn}",
+        "InvocationTimeLimitSeconds": "4",
+        "InvocationType": "SYNCHRONOUS",
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "0c9e7c55-7079-4cea-9653-4bbdc47d7eb2",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "a1e83d18-2f28-41e0-ba54-ca1f680c2f2f",
+        "Errors": [
+          {
+            "NextAction": "we're experiencing technical difficulties",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "we're experiencing technical difficulties, please try again later"
+      },
+      "Identifier": "we're experiencing technical difficulties",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "a7f2a540-11e8-4939-8a16-c56f9b39b3bf",
+        "Errors": [
+          {
+            "NextAction": "a7f2a540-11e8-4939-8a16-c56f9b39b3bf",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "QueueId": "${gerrys_queue_arn}"
+      },
+      "Identifier": "ac92ae5c-3b2b-4a7c-8420-1a6bc3582c19",
+      "Type": "UpdateContactTargetQueue",
+      "Transitions": {
+        "NextAction": "1d2d33e3-97d2-4ba6-bdee-ec7b10a8e4ac",
+        "Errors": [
+          {
+            "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "You are not in a priority queue"
+      },
+      "Identifier": "You are not in a priority queue",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "e7a17f51-4fb9-43b6-ab78-f4865588db0e",
+        "Errors": [
+          {
+            "NextAction": "we're experiencing technical difficulties",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "LambdaPriority": "$.External.priority"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "a1e83d18-2f28-41e0-ba54-ca1f680c2f2f",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "7f85067b-facf-415f-925e-d90fe1d881b1",
+        "Errors": [
+          {
+            "NextAction": "we're experiencing technical difficulties",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.LambdaPriority"
+      },
+      "Identifier": "7f85067b-facf-415f-925e-d90fe1d881b1",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "You are not in a priority queue",
+        "Conditions": [
+          {
+            "NextAction": "ac92ae5c-3b2b-4a7c-8420-1a6bc3582c19",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "standard"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "You are not in a priority queue",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    }
+  ]
+}

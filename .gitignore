@@ -55,3 +55,4 @@ venv/
 connect-terraform/environments/dev/lambda_src/lambda_function.zip
 connect-terraform/flows/*.json
 tfplan
+connect-terraform/modules/index.html

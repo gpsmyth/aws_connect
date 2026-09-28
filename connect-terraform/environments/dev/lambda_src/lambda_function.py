@@ -11,10 +11,13 @@ def lambda_handler(event, context):
     contact_data = event['Details']['ContactData']
     channel = contact_data.get('Channel', 'UNKNOWN')
 
-    priority_lambda = classify_priority(contact_data.get('CustomerMessage', ''))
+    # priority_lambda = classify_priority(contact_data.get('CustomerMessage', ''))
+    customer_message = event['Details'].get('Parameters', {}).get('CustomerMessage', '')
+    priority_lambda = classify_priority(customer_message)
+
     print(f"Priority classified as: {priority_lambda}")
 
-    # TODO: replace hardcoded input once a "Store customer input" block
+    # TODO: replace hardcoded input once customer widget working
     # feeds real customer text into event['Details']['Parameters']
     result = {
         "greeting": "Hello from Lambda",

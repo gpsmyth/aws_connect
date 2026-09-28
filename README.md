@@ -112,3 +112,37 @@ Then refine some more and see attached
 
  - instance → hours-gated routing → chat flow → CloudWatch flow logs demonstrates the Connect fundamentals
  
+
+## Overall Learnings
+
+### Notes on what was discovered when building this project
+
+- Amazon Connect Views have a strict, narrow contract for pre-chat forms — the "Connect Action" component has to be the only button type present, which meant working around a Form template's built-in Submit button rather than just deleting it.
+- The Lambda event shape wasn't obvious — customer input passed via the flow's "Function input parameters" lands under `event['Details']['Parameters']`, not `ContactData`, and debugging a silent misclassification (getting "standard" for an urgent message) traced back to reading from the wrong key entirely.
+- Verifying things end-to-end meant cross-checking CloudWatch on both the Lambda side and the Bedrock model-invocation-logging side separately, since a successful classification doesn't guarantee logging is wired up correctly.
+
+## Recommended practice on changing a connect flow
+
+### Use Case
+
+- A copy of `DemoFlow-queues` was made, called `DemoFlow-ext-lambda` with the requirement to capture the initial customer message and paas to the lambda function to be triaged via bedrock for the correct priority queue.
+
+- Focusing the the `DemoFlow-ext-lambda` the Lambda block required the following ![screenshot](images/lambda_connect_settings.png)
+- A customer widget was required to be setup and details are provided by [customer widget setup](connect-terraform/customer-widget.md)
+
+**On the dynamic parameter:** `Namespace: Media, Key: Initial message` resolves to `$.Media.InitialMessage`, which is a documented, built-in Amazon Connect reference for the customer's initial chat message. Since I linked that value on the Connect Action's `Initial Message` chat field, it's now populated and available to reference here — so setting `Destination Key: CustomerMessage` with that dynamic source will pass the customer's typed message into the Lambda's invocation parameters correctly. My Lambda will receive it under the `CustomerMessage` key in its event payload alongside the standard contact data.
+
+- Once `DeomFlow-ext-lambda` was working, the next objective was to migrate the `delta` differences noted from the screenshot above and apply to `Demoflow-queues`
+- To make the change `demo_flow_queues.json.tftpl` was editted. To know the changes needed a comparision of the **json** files was performed on the two flows.
+- The output of the changes made to `demo_flow_queues.json.tftpl` are shown in ![template changes](images/demo_flow_queues.json.tftpl.png)
+- Perform `terraform plan` and if output as expected `terraform apply`
+- Follow the procedure to test [customer widget](connect-terraform/customer-widget.md), this time re-wiring to `DemoFlow-queue` on both the customer widget and pre-chat form, saving and publishing on both and redeploying new index.html for the updated customer widget page.
+- Observe all Cloudwatch logs from the Connect Flow, Lambda, and Bedrock using various customer initial messages.
+
+## Terraform config on customer widget side
+
+After some investigation, I did not attempt to terraform customer widget and pre-chat form.
+**Terraform (via the official `hashicorp/aws` provider) doesn't currently expose a resource for either of these:**
+
+- There's no `aws_connect_view` / `aws_connect_view_version` resource. AWS does have `AWS::Connect::View` and `AWS::Connect::ViewVersion` in CloudFormation, but that support hasn't made it into HashiCorp's Terraform AWS provider — Views remain one of the acknowledged gaps in Connect's Terraform coverage.
+- The customer widget's "Communication options" configuration (the chat widget snippet, pre-chat form selection, post-chat toggle, etc.) isn't a standalone API resource at all in the way contact flows or queues are — it's admin-console/snippet-generation UI that references other resources (a View ARN, a contact flow ID) rather than being a discrete manageable object itself.

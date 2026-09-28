@@ -57,9 +57,16 @@
         "parameters": {
           "LambdaFunctionARN": {
             "displayName": "${lambda_arn}"
+          },
+          "LambdaInvocationAttributes": {
+            "CustomerMessage": {
+              "useDynamic": true
+            }
           }
         },
-        "dynamicMetadata": {}
+        "dynamicMetadata": {
+          "CustomerMessage": true
+        }
       },
       "we're experiencing technical difficulties": {
         "position": {
@@ -261,6 +268,9 @@
         "LambdaFunctionARN": "${lambda_arn}",
         "InvocationTimeLimitSeconds": "4",
         "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "CustomerMessage": "$.Media.InitialMessage"
+        },
         "ResponseValidation": {
           "ResponseType": "STRING_MAP"
         }
